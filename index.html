@@ -102,22 +102,33 @@
       <div id="balance"></div>
 
       <div class="click-area btn-transfer" onclick="goPage('2.html')"></div>
-      <div class="click-area btn-payment" onclick="goPage('payment.html')"></div>
-      <div class="click-area btn-history" onclick="goPage('history.html')"></div>
+      <div
+        class="click-area btn-payment"
+        onclick="goPage('payment.html')"
+      ></div>
+      <div
+        class="click-area btn-history"
+        onclick="goPage('history.html')"
+      ></div>
       <div class="click-area card-area" onclick="goPage('2.html')"></div>
     </div>
 
     <script>
-      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+      const API_URL =
+        "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
 
       function goPage(page) {
         if (navigator.vibrate) navigator.vibrate(10);
         window.location.href = page;
       }
 
-      document.addEventListener("touchmove", function(e) {
-        e.preventDefault();
-      }, { passive: false });
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          e.preventDefault();
+        },
+        { passive: false },
+      );
 
       async function init() {
         const code = localStorage.getItem("basparo_code");
@@ -127,14 +138,11 @@
           return;
         }
 
-        const balanceEl = document.getElementById("balance");
-        balanceEl.innerText = "... ₼"; // API cavabı gələnə qədər göstəririk
-
         try {
           const res = await fetch(API_URL + "/api/users/me", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code })
+            body: JSON.stringify({ code }),
           });
 
           if (res.status === 404) {
@@ -145,13 +153,13 @@
 
           const data = await res.json();
           const bal = Number(data.balance) || 0;
-
-          // Yeni balansı həm localStorage, həm də ekranda göstəririk
           localStorage.setItem("basparo_balance", String(bal));
-          balanceEl.innerText = bal.toFixed(2) + " ₼";
-        } catch(e) {
-          // API işləmirsə, köhnə balans göstərilmir
-          balanceEl.innerText = "--- ₼";
+          document.getElementById("balance").innerText = bal.toFixed(2) + " ₼";
+        } catch (e) {
+          const saved = localStorage.getItem("basparo_balance");
+          document.getElementById("balance").innerText = saved
+            ? parseFloat(saved).toFixed(2) + " ₼"
+            : "--- ₼";
         }
       }
 
