@@ -184,43 +184,36 @@
       </div>
     </div>
 
-    <!-- ✅ YENİ SCRIPT (sessionStorage ilə kod soruşulur) -->
+    <!-- ✅ YENİ SCRIPT (localStorage ilə balans saxlanır və yenilənir) -->
     <script>
       const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
 
-      async function loadBalance() {
-        sessionStorage.removeItem("basparo_code");
+      let balance = parseFloat(localStorage.getItem("basparo_balance") || "0");
 
-        const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
-        if (!entered) return;
-        const code = entered.trim().toUpperCase();
-
-        try {
-          const res = await fetch(API_URL + "/api/users/me", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: code })
-          });
-
-          if (res.status === 404) {
-            alert("Bu kod tapılmadı. Yenidən cəhd edin.");
-            loadBalance();
-            return;
-          }
-
-          if (!res.ok) throw new Error("Xəta");
-
-          const data = await res.json();
-          const balance = Number(data.balance) || 0;
-          document.getElementById("balance").innerText = balance.toLocaleString("az-AZ") + " ₼";
-          sessionStorage.setItem("basparo_code", code);
-          sessionStorage.setItem("basparo_balance", String(balance));
-        } catch (e) {
-          alert("Serverlə əlaqə qurmaq olmadı. Bir az sonra cəhd edin.");
-        }
+      function updateBalance() {
+        document.getElementById("balance").innerText =
+          balance.toLocaleString("az-AZ") + " ₼";
       }
 
-      window.addEventListener("load", loadBalance);
+      updateBalance();
+
+      const code = localStorage.getItem("basparo_code");
+      if (code) {
+        fetch(API_URL + "/api/users/me", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: code })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.balance !== undefined) {
+            balance = data.balance;
+            localStorage.setItem("basparo_balance", String(data.balance));
+            updateBalance();
+          }
+        })
+        .catch(function() {});
+      }
     </script>
   </body>
 </html>
