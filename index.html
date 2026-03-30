@@ -116,18 +116,18 @@
         window.location.href = page;
       }
 
-      // scroll disable
-      document.addEventListener(
-        "touchmove",
-        function (e) {
-          e.preventDefault();
-        },
-        { passive: false }
-      );
+      document.addEventListener("touchmove", function(e) {
+        e.preventDefault();
+      }, { passive: false });
 
-      /* ✅ BALANS SİSTEMİ - API */
-      const API_URL =
-        "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+
+      // ?yenile parametri varsa kodu sıfırla
+      if (window.location.search.includes("yenile")) {
+        localStorage.removeItem("basparo_code");
+        localStorage.removeItem("balance");
+        window.history.replaceState({}, "", window.location.pathname);
+      }
 
       async function loadBalance() {
         let code = localStorage.getItem("basparo_code");
@@ -135,7 +135,6 @@
         if (!code) {
           const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
           if (!entered) return;
-
           code = entered.trim().toUpperCase();
           localStorage.setItem("basparo_code", code);
         }
@@ -143,34 +142,26 @@
         try {
           const res = await fetch(API_URL + "/api/users/me", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ code: code }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: code })
           });
 
-          if (!res.ok) throw new Error("Invalid code");
+          if (res.status === 404) {
+            localStorage.removeItem("basparo_code");
+            localStorage.removeItem("balance");
+            alert("Bu kod tapılmadı. Yenidən daxil edin.");
+            loadBalance();
+            return;
+          }
+
+          if (!res.ok) throw new Error("Xəta");
 
           const data = await res.json();
           const balance = Number(data.balance) || 0;
-
-          document.getElementById("balance").innerText =
-            balance.toFixed(2) + " ₼";
-
-          localStorage.setItem("balance", balance);
+          document.getElementById("balance").innerText = balance.toFixed(2) + " ₼";
+          localStorage.setItem("balance", String(balance));
         } catch (e) {
-          console.log("API error:", e);
-
-          const saved = localStorage.getItem("balance");
-
-          if (saved) {
-            document.getElementById("balance").innerText =
-              parseFloat(saved).toFixed(2) + " ₼";
-          } else {
-            document.getElementById("balance").innerText = "--- ₼";
-          }
-
-          localStorage.removeItem("basparo_code");
+          document.getElementById("balance").innerText = "--- ₼";
         }
       }
 
