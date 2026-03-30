@@ -16,9 +16,6 @@
       content="black-translucent"
     />
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json" />
-
     <title>Bank App</title>
 
     <style>
@@ -111,6 +108,8 @@
     </div>
 
     <script>
+      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+
       function goPage(page) {
         if (navigator.vibrate) navigator.vibrate(10);
         window.location.href = page;
@@ -120,49 +119,38 @@
         e.preventDefault();
       }, { passive: false });
 
-      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
-
-      if (window.location.search.includes("yenile")) {
-        localStorage.removeItem("basparo_code");
-        window.history.replaceState({}, "", window.location.pathname);
-      }
-
-      async function loadBalance() {
-        let code = localStorage.getItem("basparo_code");
+      async function init() {
+        const code = localStorage.getItem("basparo_code");
 
         if (!code) {
-          const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
-          if (!entered) return;
-          code = entered.trim().toUpperCase();
+          window.location.href = "login.html";
+          return;
         }
 
         try {
           const res = await fetch(API_URL + "/api/users/me", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: code })
+            body: JSON.stringify({ code })
           });
 
           if (res.status === 404) {
-            localStorage.removeItem("basparo_code");
-            alert("Bu kod tapılmadı. Yenidən daxil edin.");
-            loadBalance();
+            localStorage.clear();
+            window.location.href = "login.html";
             return;
           }
 
-          if (!res.ok) throw new Error("Xəta");
-
           const data = await res.json();
-          const balance = Number(data.balance) || 0;
-          document.getElementById("balance").innerText = balance.toFixed(2) + " ₼";
-          localStorage.setItem("basparo_code", code);
-          localStorage.setItem("basparo_balance", String(balance));
-        } catch (e) {
-          document.getElementById("balance").innerText = "--- ₼";
+          const bal = Number(data.balance) || 0;
+          localStorage.setItem("basparo_balance", String(bal));
+          document.getElementById("balance").innerText = bal.toFixed(2) + " ₼";
+        } catch(e) {
+          const saved = localStorage.getItem("basparo_balance");
+          document.getElementById("balance").innerText = saved ? parseFloat(saved).toFixed(2) + " ₼" : "--- ₼";
         }
       }
 
-      window.addEventListener("load", loadBalance);
+      window.addEventListener("load", init);
     </script>
   </body>
 </html>
