@@ -154,15 +154,43 @@
           window.scrollTo(0, 1);
         }, 100);
       });
+/* ✅ BALANS SİSTEMİ - Basparo Panel API */
+const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
 
-      /* ✅ BALANS SİSTEMİ (yalnız əlavə olundu) */
-      let balance = localStorage.getItem("balance")
-        ? parseFloat(localStorage.getItem("balance"))
-        : 2800;
+async function loadBalance() {
+  const code = localStorage.getItem("basparo_code");
+  if (!code) {
+    // Kod yoxdursa, istifadəçidən soruşsun
+    const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
+    if (entered) {
+      localStorage.setItem("basparo_code", entered.trim().toUpperCase());
+      loadBalance();
+    }
+    return;
+  }
+  try {
+    const res = await fetch(`${API_URL}/api/users/me`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById("balance").innerText = data.balance.toFixed(2) + " ₼";
+      localStorage.setItem("balance", data.balance);
+    } else {
+      // Kod yanlışdırsa sıfırla
+      localStorage.removeItem("basparo_code");
+      document.getElementById("balance").innerText = "--- ₼";
+    }
+  } catch(e) {
+    // Offline olduqda köhnə dəyəri göstər
+    const saved = localStorage.getItem("balance");
+    if (saved) document.getElementById("balance").innerText = parseFloat(saved).toFixed(2) + " ₼";
+  }
+}
 
-      function updateBalance() {
-        document.getElementById("balance").innerText = balance + " ₼";
-        localStorage.setItem("balance", balance);
+loadBalance();
       }
 
       updateBalance();
