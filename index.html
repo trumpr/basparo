@@ -86,7 +86,7 @@
         background: rgba(255, 255, 255, 0.08);
       }
 
-      /* ✅ BALANS ÜÇÜN (yalnız əlavə olundu) */
+      /* ✅ BALANS ÜÇÜN */
       #balance {
         position: absolute;
         top: 53.5%;
@@ -138,7 +138,7 @@
         function (e) {
           e.preventDefault();
         },
-        { passive: false },
+        { passive: false }
       );
 
       // iOS / Android “Add to Home Screen” prompt
@@ -154,15 +154,15 @@
           window.scrollTo(0, 1);
         }, 100);
       });
-/* ✅ BALANS SİSTEMİ (yalnız əlavə olundu) */
-let balance = localStorage.getItem("balance")
-  ? parseFloat(localStorage.getItem("balance"))
-  : 2800;
-function updateBalance() {
-  document.getElementById("balance").innerText = balance + " ₼";
-  localStorage.setItem("balance", balance);
-}
-updateBalance();
+
+      /* ✅ BALANS SİSTEMİ */
+      let balance = localStorage.getItem("balance")
+        ? parseFloat(localStorage.getItem("balance"))
+        : 2800;
+
+      function updateBalance() {
+        document.getElementById("balance").innerText = balance + " ₼";
+        localStorage.setItem("balance", balance);
       }
 
       updateBalance();
