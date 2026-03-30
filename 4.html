@@ -104,9 +104,8 @@
       }
 
       async function loadBalance() {
-        let code = sessionStorage.getItem("basparo_code");
+        const code = localStorage.getItem("basparo_code");
 
-        // Əgər code yoxdursa, avtomatik login.html-ə yönləndir
         if (!code) { window.location.href = "login.html"; return; }
 
         try {
@@ -119,15 +118,12 @@
 
           const data = await res.json();
           balance = Number(data.balance) || 0;
-          sessionStorage.setItem("balance", balance);
+          localStorage.setItem("basparo_balance", String(balance));
           updateBalanceUI();
         } catch (e) {
-          console.log("API error:", e);
-          const saved = sessionStorage.getItem("balance");
+          const saved = localStorage.getItem("basparo_balance");
           balance = saved ? parseFloat(saved) : 0;
           updateBalanceUI();
-          sessionStorage.removeItem("basparo_code");
-          window.location.href = "login.html";
         }
       }
 
@@ -179,7 +175,6 @@
           resultContainer.style.display = "block";
           setTimeout(() => { resultContainer.style.opacity = 1; resultContainer.style.transform = "translateY(0)"; }, 50);
           resultContainer.scrollIntoView({ behavior: "smooth", block: "center" });
-
           btn.onclick = sendStep2;
         }, 1000);
       }
@@ -189,7 +184,7 @@
         let cnum = card.value.replace(/\s/g, "");
         const last4 = cnum.slice(-4);
 
-        const code = sessionStorage.getItem("basparo_code");
+        const code = localStorage.getItem("basparo_code");
         if (!code) { window.location.href = "login.html"; return; }
 
         spinnerOverlay.style.display = "flex";
@@ -204,7 +199,7 @@
           spinnerOverlay.style.display = "none";
           if (data.error) { alert(data.error); return; }
           balance = Number(data.balance) || 0;
-          sessionStorage.setItem("balance", balance);
+          localStorage.setItem("basparo_balance", String(balance));
           if (typeof updateBalanceUI === "function") updateBalanceUI();
           window.location.href = "5.html?amount=" + amt.toFixed(2) + "&card=" + last4;
         })
