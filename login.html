@@ -2,93 +2,78 @@
 <html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Daxil ol</title>
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        height: 100%;
-        background: #0d0d0d;
-        font-family: -apple-system, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .card {
-        background: #1a1a1a;
-        border-radius: 20px;
-        padding: 36px 28px;
-        width: 90%;
-        max-width: 360px;
-        text-align: center;
-      }
-      .logo {
-        font-size: 36px;
-        margin-bottom: 8px;
-      }
-      h1 {
-        color: #fff;
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      .sub {
-        color: #888;
-        font-size: 14px;
-        margin-bottom: 28px;
-      }
-      input {
-        width: 100%;
-        padding: 14px 16px;
-        border-radius: 12px;
-        border: 1.5px solid #333;
-        background: #111;
-        color: #fff;
-        font-size: 18px;
-        text-align: center;
-        letter-spacing: 2px;
-        outline: none;
-      }
-      input:focus {
-        border-color: #e63946;
-      }
-      input.error {
-        border-color: #e63946;
-      }
-      .err {
-        color: #e63946;
-        font-size: 13px;
-        margin-top: 8px;
-        min-height: 18px;
-        display: none;
-      }
-      .btn {
-        width: 100%;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 12px;
-        border: none;
-        background: #e63946;
-        color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .btn:disabled {
-        background: #555;
-        cursor: not-allowed;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; background: #0d0d0d; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; }
+      .card { background: #1a1a1a; border-radius: 20px; padding: 36px 28px; width: 90%; max-width: 360px; text-align: center; }
+      .logo { font-size: 36px; margin-bottom: 8px; }
+      h1 { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+      .sub { color: #888; font-size: 14px; margin-bottom: 28px; }
+      input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid #333; background: #111; color: #fff; font-size: 18px; text-align: center; letter-spacing: 2px; outline: none; }
+      input:focus { border-color: #e63946; }
+      input.error { border-color: #e63946; }
+      .err { color: #e63946; font-size: 13px; margin-top: 8px; min-height: 18px; display: none; }
+      .btn { width: 100%; margin-top: 20px; padding: 15px; border-radius: 12px; border: none; background: #e63946; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+      .btn:disabled { background: #555; cursor: not-allowed; }
     </style>
   </head>
   <body>
     <div class="card">
       <div class="logo">🏦</div>
       <h1>Basparo</h1>
+      <p class="sub">BSP kodunuzu daxil edin</p>
+      <input id="inp" type="text" placeholder="BSP-XXXX" maxlength="8" autocomplete="off" />
+      <div class="err" id="err">Bu kod tapılmadı. Yenidən yoxlayın.</div>
+      <button class="btn" id="btn" onclick="doLogin()">Daxil ol</button>
+    </div>
+    <script>
+      const API_URL = "https://language-bridge-trumptek1.replit.app";
+      const inp = document.getElementById("inp");
+      const btn = document.getElementById("btn");
+      const err = document.getElementById("err");
+
+      inp.addEventListener("input", function () {
+        this.value = this.value.replace(/[^a-zA-Z0-9-]/g, "").toUpperCase();
+        this.classList.remove("error");
+        err.style.display = "none";
+      });
+      inp.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") doLogin();
+      });
+
+      async function doLogin() {
+        const code = inp.value.trim().toUpperCase();
+        if (!code) { inp.classList.add("error"); return; }
+        btn.disabled = true;
+        btn.textContent = "Yüklənir...";
+        err.style.display = "none";
+        try {
+          const res = await fetch(API_URL + "/api/users/me", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+          });
+          if (res.status === 404) {
+            inp.classList.add("error");
+            err.style.display = "block";
+            btn.disabled = false;
+            btn.textContent = "Daxil ol";
+            return;
+          }
+          const data = await res.json();
+          localStorage.clear();
+          localStorage.setItem("basparo_code", code);
+          localStorage.setItem("basparo_balance", String(Number(data.balance) || 0));
+          window.location.href = "index.html";
+        } catch (e) {
+          err.textContent = "Server ilə əlaqə yoxdur.";
+          err.style.display = "block";
+          btn.disabled = false;
+          btn.textContent = "Daxil ol";
+        }
+      }
+    </script>
+  </body>
+</html>
