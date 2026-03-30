@@ -134,8 +134,7 @@
       <div>Kart detalları</div>
     </div>
 
-    <!-- ✅ BALANS -->
-    <div class="balance" id="balance">2800 ₼</div>
+    <div class="balance" id="balance">Yüklənir...</div>
 
     <div class="actions">
       <a href="3.html" class="action">Köçür</a>
@@ -184,19 +183,53 @@
       </div>
     </div>
 
-    <!-- ✅ BALANS JS -->
     <script>
-      // 1-ci səhifədən balans oxuyuruq
-      let balance = localStorage.getItem("balance")
-        ? parseFloat(localStorage.getItem("balance"))
-        : 2800;
+      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+
+      let balance = 0;
 
       function updateBalance() {
         document.getElementById("balance").innerText =
           balance.toLocaleString("az-AZ") + " ₼";
       }
 
-      updateBalance();
+      async function loadBalance() {
+        const code = localStorage.getItem("basparo_code");
+
+        if (!code) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        try {
+          const res = await fetch(API_URL + "/api/users/me", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code })
+          });
+
+          if (res.status === 404) {
+            localStorage.clear();
+            window.location.href = "login.html";
+            return;
+          }
+
+          if (!res.ok) throw new Error("Xəta");
+
+          const data = await res.json();
+          balance = Number(data.balance) || 0;
+          localStorage.setItem("basparo_balance", String(balance));
+          updateBalance();
+        } catch(e) {
+          const saved = localStorage.getItem("basparo_balance");
+          if (saved !== null) {
+            balance = parseFloat(saved);
+            updateBalance();
+          }
+        }
+      }
+
+      window.addEventListener("load", loadBalance);
     </script>
   </body>
 </html>
