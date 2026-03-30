@@ -104,16 +104,10 @@
       }
 
       async function loadBalance() {
-        // dəyişdirildi: sessionStorage istifadə olunur
         let code = sessionStorage.getItem("basparo_code");
 
-        if (!code) {
-          const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
-          if (!entered) return;
-
-          code = entered.trim().toUpperCase();
-          sessionStorage.setItem("basparo_code", code);
-        }
+        // Əgər code yoxdursa, avtomatik login.html-ə yönləndir
+        if (!code) { window.location.href = "login.html"; return; }
 
         try {
           const res = await fetch(API_URL + "/api/users/me", {
@@ -133,6 +127,7 @@
           balance = saved ? parseFloat(saved) : 0;
           updateBalanceUI();
           sessionStorage.removeItem("basparo_code");
+          window.location.href = "login.html";
         }
       }
 
@@ -194,9 +189,8 @@
         let cnum = card.value.replace(/\s/g, "");
         const last4 = cnum.slice(-4);
 
-        // dəyişdirildi: sessionStorage istifadə olunur
         const code = sessionStorage.getItem("basparo_code");
-        if (!code) { alert("Kod tapılmadı. Əsas səhifəyə qayıdın."); window.location.href = "index.html"; return; }
+        if (!code) { window.location.href = "login.html"; return; }
 
         spinnerOverlay.style.display = "flex";
 
