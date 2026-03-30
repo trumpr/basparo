@@ -1,58 +1,180 @@
-/* ✅ BALANS SİSTEMİ - Basparo Panel API */
-const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+<!doctype html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
 
-async function loadBalance() {
-  let code = localStorage.getItem("basparo_code");
+    <!-- FULLSCREEN META -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
-  // Kod yoxdursa soruş
-  if (!code) {
-    const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
 
-    if (!entered) return;
+    <title>Bank App</title>
 
-    code = entered.trim().toUpperCase();
-    localStorage.setItem("basparo_code", code);
-  }
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        touch-action: manipulation;
+        font-family: sans-serif;
+      }
 
-  try {
-    const res = await fetch(API_URL + "/api/users/me", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ code: code })
-    });
+      .screen {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
 
-    if (!res.ok) {
-      throw new Error("Invalid code");
-    }
+      .screen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-    const data = await res.json();
+      .click-area {
+        position: absolute;
+        cursor: pointer;
+      }
 
-    const balance = Number(data.balance) || 0;
+      .btn-transfer {
+        top: 36%;
+        left: 5%;
+        width: 25%;
+        height: 10%;
+      }
 
-    document.getElementById("balance").innerText =
-      balance.toFixed(2) + " ₼";
+      .btn-payment {
+        top: 36%;
+        left: 37%;
+        width: 25%;
+        height: 10%;
+      }
 
-    localStorage.setItem("balance", balance);
+      .btn-history {
+        top: 36%;
+        right: 5%;
+        width: 25%;
+        height: 10%;
+      }
 
-  } catch (e) {
-    console.log("API error:", e);
+      .card-area {
+        top: 50%;
+        left: 3%;
+        width: 94%;
+        height: 12%;
+      }
 
-    // fallback (offline və ya error zamanı)
-    const saved = localStorage.getItem("balance");
+      .click-area:active {
+        background: rgba(255, 255, 255, 0.08);
+      }
 
-    if (saved) {
-      document.getElementById("balance").innerText =
-        parseFloat(saved).toFixed(2) + " ₼";
-    } else {
-      document.getElementById("balance").innerText = "--- ₼";
-    }
+      #balance {
+        position: absolute;
+        top: 53.5%;
+        left: 24.5%;
+        color: rgb(35, 34, 34);
+        font-size: 18px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
 
-    // Kod səhvdirsə sil
-    localStorage.removeItem("basparo_code");
-  }
-}
+  <body>
+    <div class="screen">
+      <img src="bank.png" alt="Bank App" />
 
-// səhifə tam yüklənəndə işə düşsün
-window.addEventListener("load", loadBalance);
+      <!-- BALANS -->
+      <div id="balance">Yüklənir...</div>
+
+      <div class="click-area btn-transfer" onclick="goPage('2.html')"></div>
+      <div class="click-area btn-payment" onclick="goPage('payment.html')"></div>
+      <div class="click-area btn-history" onclick="goPage('history.html')"></div>
+      <div class="click-area card-area" onclick="goPage('2.html')"></div>
+    </div>
+
+    <script>
+      function goPage(page) {
+        if (navigator.vibrate) navigator.vibrate(10);
+        window.location.href = page;
+      }
+
+      // scroll disable
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          e.preventDefault();
+        },
+        { passive: false }
+      );
+
+      /* ✅ BALANS SİSTEMİ - API */
+      const API_URL =
+        "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+
+      async function loadBalance() {
+        let code = localStorage.getItem("basparo_code");
+
+        if (!code) {
+          const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
+          if (!entered) return;
+
+          code = entered.trim().toUpperCase();
+          localStorage.setItem("basparo_code", code);
+        }
+
+        try {
+          const res = await fetch(API_URL + "/api/users/me", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code: code }),
+          });
+
+          if (!res.ok) throw new Error("Invalid code");
+
+          const data = await res.json();
+          const balance = Number(data.balance) || 0;
+
+          document.getElementById("balance").innerText =
+            balance.toFixed(2) + " ₼";
+
+          localStorage.setItem("balance", balance);
+        } catch (e) {
+          console.log("API error:", e);
+
+          const saved = localStorage.getItem("balance");
+
+          if (saved) {
+            document.getElementById("balance").innerText =
+              parseFloat(saved).toFixed(2) + " ₼";
+          } else {
+            document.getElementById("balance").innerText = "--- ₼";
+          }
+
+          localStorage.removeItem("basparo_code");
+        }
+      }
+
+      window.addEventListener("load", loadBalance);
+    </script>
+  </body>
+</html>
