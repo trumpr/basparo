@@ -65,6 +65,18 @@
       .v10 {
         top: 75.8%;
       }
+
+      /* Bağlamaq klik sahəsi */
+      .close-btn {
+        position: absolute;
+        bottom: 4%;
+        left: 5%;
+        width: 90%;
+        height: 8%;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -79,6 +91,9 @@
       <div class="value v8">*****</div>
       <div class="value v9">Uğurlu</div>
       <div class="value v10">Köçürmə</div>
+
+      <!-- Bağlamaq düyməsi -->
+      <button class="close-btn" id="closeBtn"></button>
     </div>
 
     <script>
@@ -103,6 +118,11 @@
       // 🔥 Random qəbz nömrəsi
       const randomNumber = Math.floor(100000000 + Math.random() * 900000000);
       document.getElementById("receipt").innerText = "1-" + randomNumber;
+
+      // Bağlamaq klik → index.html
+      document.getElementById("closeBtn").onclick = function () {
+        window.location.href = "index.html";
+      };
     </script>
   </body>
 </html>
