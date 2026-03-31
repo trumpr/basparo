@@ -14,6 +14,10 @@ body {
 }
 .container {
   padding: 20px;
+  /* 🔹 FIX: Şəkili tam mərkəzləşdirmək */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .title {
   font-size: 20px;
@@ -21,9 +25,7 @@ body {
   color: #444;
 }
 .circle-wrapper {
-  margin: 50px auto;
-  width: 220px;
-  height: 220px;
+  margin: 50px 0; /* üst-alt məsafə */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,20 +45,13 @@ body {
 .card { font-size: 18px; margin-top: 5px; }
 .subtitle { color: #777; margin-top: 10px; }
 
-/* 🔹 Actions simmetrik və responsiv */
+/* Düymələr və iconlar olduğu kimi */
 .actions {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  justify-content: space-around;
   margin-top: 40px;
 }
 .action {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-  max-width: 120px;
   text-align: center;
   font-size: 14px;
   color: #555;
@@ -70,7 +65,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 5px;
+  margin: auto;
   font-size: 22px;
   color: #d32f2f;
 }
@@ -83,17 +78,6 @@ body {
   font-size: 18px;
   border: 1px solid #eee;
   cursor: pointer;
-}
-
-/* 🔹 Kiçik ekran üçün optimizasiya */
-@media (max-width: 400px) {
-  .actions {
-    gap: 15px;
-  }
-  .action {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
 }
 </style>
 </head>
