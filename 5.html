@@ -2,169 +2,179 @@
 <html lang="az">
   <head>
     <meta charset="UTF-8" />
-
-    <!-- FULLSCREEN META -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    />
-    <meta name="theme-color" content="#000000" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-
-    <title>Bank App</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uğurlu əməliyyat</title>
     <style>
-      html,
+      /* Sənin mövcud stil unchanged */
       body {
         margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-        background: #000;
-        touch-action: manipulation;
-        font-family: sans-serif;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        text-align: center;
+        color: #333;
       }
-
-      .screen {
-        width: 100vw;
-        height: 100vh;
-        position: relative;
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
+      .container {
+        padding: 20px;
       }
-
-      .screen img {
-        width: 100%;
-        height: auto; /* FIX BURDADIR */
-        object-fit: contain;
+      .title {
+        font-size: 20px;
+        margin-top: 10px;
+        color: #444;
       }
-
-      .click-area {
-        position: absolute;
+      .circle-wrapper {
+        margin: 50px auto;
+        width: 220px;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .outer-circle {
+        width: 220px;
+        height: 220px;
+        background: rgba(0, 200, 0, 0.08);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .middle-circle {
+        width: 160px;
+        height: 160px;
+        background: rgba(0, 200, 0, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .inner-circle {
+        width: 95px;
+        height: 95px;
+        background: #2bb24c;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .check {
+        color: #fff;
+        font-size: 42px;
+        line-height: 1;
+      }
+      .success-text {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      .amount {
+        font-size: 38px;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+      .card {
+        font-size: 18px;
+        margin-top: 5px;
+      }
+      .subtitle {
+        color: #777;
+        margin-top: 10px;
+      }
+      .actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 40px;
+      }
+      .action {
+        text-align: center;
+        font-size: 14px;
+        color: #555;
         cursor: pointer;
       }
-
-      .btn-transfer {
-        top: 36%;
-        left: 5%;
-        width: 25%;
-        height: 10%;
+      .icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        font-size: 22px;
+        color: #d32f2f;
       }
-
-      .btn-payment {
-        top: 36%;
-        left: 37%;
-        width: 25%;
-        height: 10%;
-      }
-
-      .btn-history {
-        top: 36%;
-        right: 5%;
-        width: 25%;
-        height: 10%;
-      }
-
-      .card-area {
-        top: 50%;
-        left: 3%;
-        width: 94%;
-        height: 12%;
-      }
-
-      .click-area:active {
-        background: rgba(255, 255, 255, 0.08);
-      }
-
-      #balance {
-        position: absolute;
-        top: 53.5%;
-        left: 24.5%;
-        color: rgb(35, 34, 34);
+      .button {
+        margin: 50px 20px;
+        padding: 16px;
+        background: #fff;
+        border-radius: 12px;
+        color: #d32f2f;
         font-size: 18px;
-        font-weight: bold;
+        border: 1px solid #eee;
+        cursor: pointer;
       }
     </style>
   </head>
-
   <body>
-    <div class="screen">
-      <img src="bank.png" alt="Bank App" />
+    <div class="container">
+      <div class="title">Bank kartına köçürmə</div>
+      <div class="circle-wrapper">
+        <div class="outer-circle">
+          <div class="middle-circle">
+            <div class="inner-circle">
+              <div class="check">✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="success-text">Uğurlu əməliyyat!</div>
+      <div class="amount" id="amount">0.00 AZN</div>
+      <div class="card" id="card">****0000</div>
+      <div class="subtitle">Bank kartına köçürmə</div>
+      <div class="actions">
+        <div class="action">
+          <div class="icon">★</div>
+          Şablonlara əlavə et
+        </div>
+        <div class="action">
+          <div class="icon">⟳</div>
+          Əməliyyatlar
+        </div>
+        <div class="action" onclick="window.location.href = '6.html'">
+          <div class="icon">i</div>
+          Detallar
+        </div>
+      </div>
 
-      <!-- BALANS -->
-      <div id="balance"></div>
-
-      <div class="click-area btn-transfer" onclick="goPage('2.html')"></div>
-      <div
-        class="click-area btn-payment"
-        onclick="goPage('payment.html')"
-      ></div>
-      <div
-        class="click-area btn-history"
-        onclick="goPage('history.html')"
-      ></div>
-      <div class="click-area card-area" onclick="goPage('2.html')"></div>
+      <!-- DÜZƏLDİLDİ -->
+      <div class="button" onclick="window.location.href = 'index.html'">
+        Bağlamaq
+      </div>
     </div>
 
+    <!-- 🔹 Script yalnız məlumat üçün -->
     <script>
-      const API_URL =
-        "https://8e02283d-6dab-4cbf-93db-16181ed3b0aa-00-297hqfhjj5j3a.kirk.replit.dev";
+      const params = new URLSearchParams(window.location.search);
+      const amt = params.get("amount") || "0.00";
+      const cardLast4 = params.get("card") || "0000";
 
-      function goPage(page) {
-        if (navigator.vibrate) navigator.vibrate(10);
-        window.location.href = page;
-      }
+      // Ekranda göstər
+      document.getElementById("amount").textContent = amt + " AZN";
+      document.getElementById("card").textContent = "****" + cardLast4;
 
-      document.addEventListener(
-        "touchmove",
-        function (e) {
-          e.preventDefault();
-        },
-        { passive: false }
-      );
+      // Telefon vaxtını götür
+      const now = new Date();
+      const time = now.toLocaleString("az-AZ", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-      async function init() {
-        const code = localStorage.getItem("basparo_code");
-
-        if (!code) {
-          window.location.href = "login.html";
-          return;
-        }
-
-        try {
-          const res = await fetch(API_URL + "/api/users/me", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code }),
-          });
-
-          if (res.status === 404) {
-            localStorage.clear();
-            window.location.href = "login.html";
-            return;
-          }
-
-          const data = await res.json();
-          const bal = Number(data.balance) || 0;
-          localStorage.setItem("basparo_balance", String(bal));
-          document.getElementById("balance").innerText =
-            bal.toFixed(2) + " ₼";
-        } catch (e) {
-          const saved = localStorage.getItem("basparo_balance");
-          document.getElementById("balance").innerText = saved
-            ? parseFloat(saved).toFixed(2) + " ₼"
-            : "--- ₼";
-        }
-      }
-
-      window.addEventListener("load", init);
+      // localStorage-a yaz
+      localStorage.setItem("amount", amt);
+      localStorage.setItem("card", cardLast4);
+      localStorage.setItem("time", time);
     </script>
   </body>
 </html>
