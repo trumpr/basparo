@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Uğurlu əməliyyat</title>
     <style>
-      /* Sənin mövcud stil unchanged */
       body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -79,17 +78,22 @@
         color: #777;
         margin-top: 10px;
       }
+
+      /* 🔧 BURASI DÜZƏLDİ */
       .actions {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         margin-top: 40px;
       }
+
       .action {
+        flex: 1;
         text-align: center;
         font-size: 14px;
         color: #555;
         cursor: pointer;
       }
+
       .icon {
         width: 55px;
         height: 55px;
@@ -98,10 +102,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: auto;
+        margin: 0 auto 5px;
         font-size: 22px;
         color: #d32f2f;
       }
+
       .button {
         margin: 50px 20px;
         padding: 16px;
@@ -130,6 +135,7 @@
       <div class="amount" id="amount">0.00 AZN</div>
       <div class="card" id="card">****0000</div>
       <div class="subtitle">Bank kartına köçürmə</div>
+
       <div class="actions">
         <div class="action">
           <div class="icon">★</div>
@@ -145,23 +151,19 @@
         </div>
       </div>
 
-      <!-- DÜZƏLDİLDİ -->
       <div class="button" onclick="window.location.href = 'index.html'">
         Bağlamaq
       </div>
     </div>
 
-    <!-- 🔹 Script yalnız məlumat üçün -->
     <script>
       const params = new URLSearchParams(window.location.search);
       const amt = params.get("amount") || "0.00";
       const cardLast4 = params.get("card") || "0000";
 
-      // Ekranda göstər
       document.getElementById("amount").textContent = amt + " AZN";
       document.getElementById("card").textContent = "****" + cardLast4;
 
-      // Telefon vaxtını götür
       const now = new Date();
       const time = now.toLocaleString("az-AZ", {
         day: "2-digit",
@@ -171,7 +173,6 @@
         minute: "2-digit",
       });
 
-      // localStorage-a yaz
       localStorage.setItem("amount", amt);
       localStorage.setItem("card", cardLast4);
       localStorage.setItem("time", time);
